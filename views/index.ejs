@@ -17,6 +17,22 @@
                             </tr>
                         <% }) %>
 
+                        <tr>
+                            <td colspan="3" align="center">
+                                总共 <%= count%> 条记录
+                                第 <%= page %>／ <%= countPage%> 页,
+
+                                <% if (page!=1) {%>
+                                <a href="/?page=1">首页</a>
+                                <a href="/?page=<%=(page-1)%>">上一页</a> &nbsp;
+                                <% } %>
+
+                                <% if (page!=countPage) {%>
+                                <a href="/?page=<%=(page+1)%>">下一页</a> &nbsp;
+                                <a href="/?page=<%=countPage%>">尾页</a> &nbsp;
+                                <% } %>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

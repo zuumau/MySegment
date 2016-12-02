@@ -9,15 +9,16 @@ var questionModel = require('../models/QuestionModel');
 router.get('/', function(req, res, next) {
     loginbean = req.session.loginbean;
     console.log(loginbean);
-    questionModel.queList(req, res, function (data) {
-        if (data != null) {
-            res.render('index', { title: 'Express',
-                data: data,
-                loginbean: loginbean
-            });
-        }
-        
-    });
+    // questionModel.queList(req, res, function (data) {
+    //     if (data != null) {
+    //         res.render('index', { title: 'Express',
+    //             data: data,
+    //             loginbean: loginbean
+    //         });
+    //     }
+    //    
+    // });
+    questionModel.queList(req, res, loginbean);
 
 
 

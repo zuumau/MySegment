@@ -1,4 +1,5 @@
 var connPool = require('./ConnPool');
+var async = require('async');
 
 module.exports = {
     ask: function (req, res) {
@@ -23,7 +24,7 @@ module.exports = {
             conn.release();
         })
     },
-    queList: function (req, res, callback) {
+    queList: function (req, res, loginbean,cb) {
         pool = connPool();
         pool.getConnection(function (err, conn) {
             if (err) {
@@ -31,16 +32,50 @@ module.exports = {
                 return;
             }
 
-            var queryListSql = 'select qid,title,looknum,renum,finished,updtime,createtime from question order by qid desc';
-            var parma = [];
-            conn.query(queryListSql, parma, function (err, rs) {
-                if (err) {
-                    res.send('读取异常'+ err.message);
-                    return;
+            var page = 1;
+            if (req.query['page']!=undefined) {
+                page = parseInt(req.query['page']);
+                if (page < 1) {
+                    page = 1;
                 }
 
-                callback(rs);
+            }
+            pageSize = 3;
+            pointStart = (page-1)*pageSize;
+            count = 0;
+
+            var countSql = 'select count(*) as count from question';
+            var queryListSql = 'select qid,title,looknum,renum,finished,updtime,createtime from question order by qid desc limit ?,?';
+            var parma = [pointStart, pageSize];
+
+            async.series({
+                one: function (callback) {
+                    conn.query(countSql, [], function (err, rs) {
+                        count = rs[0]['count'];
+                        countPage = Math.ceil(count/pageSize);
+                        if (page > countPage) {
+                            page = countPage;
+                            pointStart = (page-1)*pageSize;
+                            parma = [pointStart, pageSize];
+                        }
+                        callback(null, rs);
+                    });
+                },
+                two: function (callback) {
+                    conn.query(queryListSql, parma, function (err, rs) {
+                        callback(null, rs);
+                    });
+                }
+            },function (err, results) {
+
+                console.log('```````````````````');
+                data = results['two']
+                res.render('index', {loginbean: loginbean, data: data, page:page, count: count, countPage: countPage});
+                // res.send('查完');
             });
+
+
+
             conn.release();
         })
     }
