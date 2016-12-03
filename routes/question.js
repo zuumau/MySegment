@@ -18,4 +18,10 @@ router.all('/ask', function (req, res) {
 
 });
 
+router.get('/detail', function (req, res) {
+    // res.send('查看详情');
+    loginbead =  checkSession.check(req, res);
+    questionModel.detail(req, res, loginbead);
+})
+
 module.exports = router;

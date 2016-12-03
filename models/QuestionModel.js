@@ -103,9 +103,41 @@ module.exports = {
             //     // res.send('查完');
             // });
 
-
-
             // conn.release();
         })
+    },
+    detail: function (req, res) {
+        var qid = req.query['qid'];
+        if (qid != undefined) {
+            var pool = connPool();
+
+            var updSql = 'update question set looknum=looknum+1 where qid=?';
+            var param = [qid];
+            var detailSql = 'select qid,title,content,uid,looknum,renum,finished,updtime,createtime from question where qid=?';
+
+            ep.all(['update','query'], function (rs, detail) {
+                console.log(rs);
+                console.log('`````````````````````');
+                console.log(detail);
+                res.render('queDetail', {data: detail[0], loginbead: loginbead});
+            });
+
+            pool.getConnection(function (err, conn) {
+                conn.query(updSql, param, function (err, rs) {
+                    ep.emit('update', rs);
+                });
+                conn.query(detailSql, param, function (err, detail) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    ep.emit('query', detail);
+                })
+                conn.release();
+            })
+
+
+        } else {
+            res.send('qid异常')
+        }
     }
 }

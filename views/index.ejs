@@ -13,7 +13,7 @@
                             <tr>
                                 <td><div><%= row['renum'] %><br/>回答</div></td>
                                 <td><%= row['looknum'] %><br/>浏览</td>
-                                <td><%= row['title'] %></td>
+                                <td><a href="/question/detail?qid=<%= row['qid'] %>" target="_blank"><%= row['title'] %></a></td>
                             </tr>
                         <% }) %>
 
