@@ -7,8 +7,8 @@ var questionModel = require('../models/QuestionModel');
 
 /*   GET home page. */
 router.get('/', function(req, res, next) {
-    loginbean = req.session.loginbean;
-    console.log(loginbean);
+    var loginbean = req.session.loginbean;
+    // console.log(loginbean);
     // questionModel.queList(req, res, function (data) {
     //     if (data != null) {
     //         res.render('index', { title: 'Express',
@@ -18,7 +18,9 @@ router.get('/', function(req, res, next) {
     //     }
     //    
     // });
-    questionModel.queList(req, res, loginbean);
+    questionModel.queList(req, res, function (data, page, count, countPage) {
+        res.render('index', {loginbean: loginbean, data: data, page: page, count: count, countPage: countPage});
+    });
 
 
 
